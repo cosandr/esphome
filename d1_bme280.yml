@@ -1,0 +1,64 @@
+---
+
+esphome:
+  name: livingroom
+
+esp8266:
+  board: d1
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+web_server:
+  port: 80
+
+logger:
+
+i2c:
+
+api:
+
+sensor:
+  - platform: bme280
+    temperature:
+      name: "Temperature"
+      id: bme280_temperature
+    pressure:
+      name: "Pressure"
+      id: bme280_pressure
+    humidity:
+      name: "Relative Humidity"
+      id: bme280_humidity
+    address: 0x76
+    update_interval: 60s
+
+  - platform: template
+    name: "Dew Point"
+    lambda: |-
+      return (243.5*(log(id(bme280_humidity).state/100)+((17.67*id(bme280_temperature).state)/
+      (243.5+id(bme280_temperature).state)))/(17.67-log(id(bme280_humidity).state/100)-
+      ((17.67*id(bme280_temperature).state)/(243.5+id(bme280_temperature).state))));
+    unit_of_measurement: °C
+    icon: 'mdi:thermometer-alert'
+
+  - platform: template
+    name: "Heat Index"
+    lambda: |-
+      const float C1 = -8.78469475556;
+      const float C2 = 1.61139411;
+      const float C3 = 2.33854883889;
+      const float C4 = -0.14611605;
+      const float C5 = -0.012308094;
+      const float C6 = -0.0164248277778;
+      const float C7 = 0.002211732;
+      const float C8 = 0.00072546;
+      const float C9 = -0.000003582;
+      float T = id(bme280_temperature).state;
+      float R = id(bme280_humidity).state;
+      float T2 = powf(id(bme280_temperature).state, 2);
+      float R2 = powf(id(bme280_humidity).state, 2);
+
+      return (C1 + C2*T + C3*R + C4*T*R + C5*T2 + C6*R2 + C7*T2*R + C8*T*R2 + C9*T2*R2);
+    unit_of_measurement: °C
+    icon: 'mdi:thermometer-alert'
