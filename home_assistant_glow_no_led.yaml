@@ -121,8 +121,8 @@ sensor:
     internal_filter_mode: PULSE
     filters:
       - lambda: return x * ((60.0 / ${pulse_rate}) * 1000.0);
-      # - throttle_average: 5s
-      # - filter_out: NaN
+      - throttle_average: 5s
+      - filter_out: NaN
     total:
       name: '${friendly_name} - Total Energy'
       id: sensor_total_energy
