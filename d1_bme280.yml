@@ -31,7 +31,7 @@ api:
 ota:
 
 sensor:
-  - platform: bme280
+  - platform: bme280_i2c
     temperature:
       name: ${upper_devicename} Temperature
     pressure:
